@@ -1,0 +1,68 @@
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+
+def encrypt_image(image_path, key, output_path):
+    image = Image.open(image_path)
+    np_image = np.array(image)
+    
+    # Simple pixel manipulation: add the key to each pixel value and take modulo 256
+    encrypted_np_image = (np_image + key) % 256
+
+    encrypted_image = Image.fromarray(encrypted_np_image.astype(np.uint8))
+    encrypted_image.save(output_path)
+    print(f"Image encrypted and saved as {output_path}")
+
+    return encrypted_image
+
+def decrypt_image(image_path, key, output_path):
+    image = Image.open(image_path)
+    np_image = np.array(image)
+    
+    # Reverse the pixel manipulation: subtract the key from each pixel value and take modulo 256
+    decrypted_np_image = (np_image - key) % 256
+
+    decrypted_image = Image.fromarray(decrypted_np_image.astype(np.uint8))
+    decrypted_image.save(output_path)
+    print(f"Image decrypted and saved as {output_path}")
+
+    return decrypted_image
+
+def display_images(original_image, encrypted_image, decrypted_image):
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    axes[0].imshow(original_image)
+    axes[0].set_title("Original Image")
+    axes[0].axis('off')
+    
+    axes[1].imshow(encrypted_image)
+    axes[1].set_title("Encrypted Image")
+    axes[1].axis('off')
+    
+    axes[2].imshow(decrypted_image)
+    axes[2].set_title("Decrypted Image")
+    axes[2].axis('off')
+    
+    plt.show()
+
+def main():
+    print("Image Encryption Tool")
+    image_path = input("Enter the path to the image: ")
+    key = int(input("Enter the encryption/decryption key (integer): "))
+    
+    encrypted_output_path = "encrypted_image.png"
+    decrypted_output_path = "decrypted_image.png"
+    
+    # Encrypt the image
+    encrypted_image = encrypt_image(image_path, key, encrypted_output_path)
+    
+    # Decrypt the image
+    decrypted_image = decrypt_image(encrypted_output_path, key, decrypted_output_path)
+    
+    # Load the original image for display
+    original_image = Image.open(image_path)
+    
+    # Display the images
+    display_images(original_image, encrypted_image, decrypted_image)
+
+# Run the main function
+main()
